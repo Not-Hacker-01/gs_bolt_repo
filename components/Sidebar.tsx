@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
-import { Home, FolderOpen, Key, BarChart3, Settings, HelpCircle } from 'lucide-react-native';
+import { Chrome as Home, FolderOpen, Key, ChartBar as BarChart3, Settings, CircleHelp as HelpCircle } from 'lucide-react-native';
 
 interface NavItem {
   id: string;

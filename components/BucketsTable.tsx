@@ -8,7 +8,7 @@ import {
   StyleSheet, 
   useWindowDimensions 
 } from 'react-native';
-import { Search, MoreHorizontal } from 'lucide-react-native';
+import { Search, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
 
 interface Bucket {
   id: string;

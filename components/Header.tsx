@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 
 export default function Header() {
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, isMobile && styles.headerMobile]}>
       <View style={styles.headerLeft}>
-        <Text style={styles.brandText}>myflapi</Text>
+        <Text style={[styles.brandText, isMobile && styles.brandTextMobile]}>myflapi</Text>
       </View>
       <View style={styles.headerRight}>
         <View style={styles.notificationBadge}>
@@ -30,6 +33,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
   },
+  headerMobile: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
   headerLeft: {
     flex: 1,
   },
@@ -37,6 +44,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#1F2937',
+  },
+  brandTextMobile: {
+    fontSize: 16,
   },
   headerRight: {
     flexDirection: 'row',

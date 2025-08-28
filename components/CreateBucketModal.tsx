@@ -5,7 +5,8 @@ import {
   TextInput, 
   TouchableOpacity, 
   Modal, 
-  StyleSheet 
+  StyleSheet,
+  useWindowDimensions
 } from 'react-native';
 import { X } from 'lucide-react-native';
 
@@ -17,6 +18,8 @@ interface CreateBucketModalProps {
 
 export default function CreateBucketModal({ visible, onClose, onCreateBucket }: CreateBucketModalProps) {
   const [bucketName, setBucketName] = useState('');
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
 
   const handleCreate = () => {
     if (bucketName.trim()) {
@@ -34,15 +37,17 @@ export default function CreateBucketModal({ visible, onClose, onCreateBucket }: 
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <View style={styles.modal}>
+        <View style={[styles.modal, isMobile && styles.modalMobile]}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Create New Bucket</Text>
+            <Text style={[styles.modalTitle, isMobile && styles.modalTitleMobile]}>
+              Create New Bucket
+            </Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <X size={20} color="#6B7280" />
             </TouchableOpacity>
           </View>
           
-          <View style={styles.modalContent}>
+          <View style={[styles.modalContent, isMobile && styles.modalContentMobile]}>
             <Text style={styles.label}>Bucket Name</Text>
             <TextInput
               style={styles.input}
@@ -53,7 +58,7 @@ export default function CreateBucketModal({ visible, onClose, onCreateBucket }: 
             />
           </View>
           
-          <View style={styles.modalFooter}>
+          <View style={[styles.modalFooter, isMobile && styles.modalFooterMobile]}>
             <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
@@ -77,17 +82,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 16,
   },
   modal: {
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    width: '90%',
+    width: '100%',
     maxWidth: 400,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 5,
+  },
+  modalMobile: {
+    marginHorizontal: 16,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -102,11 +111,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1F2937',
   },
+  modalTitleMobile: {
+    fontSize: 16,
+  },
   closeButton: {
     padding: 4,
   },
   modalContent: {
     padding: 20,
+  },
+  modalContentMobile: {
+    padding: 16,
   },
   label: {
     fontSize: 14,
@@ -128,6 +143,9 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopWidth: 1,
     borderTopColor: '#E5E7EB',
+  },
+  modalFooterMobile: {
+    padding: 16,
   },
   cancelButton: {
     flex: 1,

@@ -1,55 +1,56 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
-import { Chrome as Home, FolderOpen, Key, ChartBar as BarChart3, Settings, CircleHelp as HelpCircle } from 'lucide-react-native';
+import { Home, FolderOpen, Key, BarChart3, Settings, HelpCircle } from 'lucide-react-native';
 
 interface NavItem {
   id: string;
   label: string;
-  icon: React.ReactNode;
+  icon: React.ComponentType<{ size: number; color: string }>;
   route: string;
 }
 
 export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const { width } = useWindowDimensions();
   
   const navItems: NavItem[] = [
     {
       id: 'dashboard',
       label: 'Dashboard',
-      icon: <Home size={20} color={pathname === '/(tabs)' ? '#3B82F6' : '#6B7280'} />,
-      route: '/(tabs)',
+      icon: Home,
+      route: '/',
     },
     {
       id: 'buckets',
       label: 'Buckets',
-      icon: <FolderOpen size={20} color={pathname === '/(tabs)/buckets' ? '#3B82F6' : '#6B7280'} />,
-      route: '/(tabs)/buckets',
+      icon: FolderOpen,
+      route: '/buckets',
     },
     {
       id: 'access-keys',
       label: 'Access Keys',
-      icon: <Key size={20} color={pathname === '/(tabs)/access-keys' ? '#3B82F6' : '#6B7280'} />,
-      route: '/(tabs)/access-keys',
+      icon: Key,
+      route: '/access-keys',
     },
     {
       id: 'usage-billing',
       label: 'Usage & Billing',
-      icon: <BarChart3 size={20} color={pathname === '/(tabs)/usage-billing' ? '#3B82F6' : '#6B7280'} />,
-      route: '/(tabs)/usage-billing',
+      icon: BarChart3,
+      route: '/usage-billing',
     },
     {
       id: 'settings',
       label: 'Settings',
-      icon: <Settings size={20} color={pathname === '/(tabs)/settings' ? '#3B82F6' : '#6B7280'} />,
-      route: '/(tabs)/settings',
+      icon: Settings,
+      route: '/settings',
     },
     {
       id: 'help',
       label: 'Help',
-      icon: <HelpCircle size={20} color={pathname === '/(tabs)/help' ? '#3B82F6' : '#6B7280'} />,
-      route: '/(tabs)/help',
+      icon: HelpCircle,
+      route: '/help',
     },
   ];
 
@@ -58,9 +59,14 @@ export default function Sidebar() {
   };
 
   const isActive = (route: string) => {
-    if (route === '/(tabs)') return pathname === '/(tabs)';
-    return pathname === route;
+    if (route === '/') return pathname === '/' || pathname === '/(tabs)';
+    return pathname.includes(route);
   };
+
+  // Only show sidebar on desktop
+  if (width < 1024) {
+    return null;
+  }
 
   return (
     <View style={styles.sidebar}>
@@ -69,24 +75,32 @@ export default function Sidebar() {
       </View>
       
       <View style={styles.nav}>
-        {navItems.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={[
-              styles.navItem,
-              isActive(item.route) && styles.navItemActive,
-            ]}
-            onPress={() => handleNavigation(item.route)}
-          >
-            {item.icon}
-            <Text style={[
-              styles.navText,
-              isActive(item.route) && styles.navTextActive,
-            ]}>
-              {item.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {navItems.map((item) => {
+          const IconComponent = item.icon;
+          const active = isActive(item.route);
+          
+          return (
+            <TouchableOpacity
+              key={item.id}
+              style={[
+                styles.navItem,
+                active && styles.navItemActive,
+              ]}
+              onPress={() => handleNavigation(item.route)}
+            >
+              <IconComponent 
+                size={20} 
+                color={active ? '#3B82F6' : '#6B7280'} 
+              />
+              <Text style={[
+                styles.navText,
+                active && styles.navTextActive,
+              ]}>
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
@@ -136,4 +150,3 @@ const styles = StyleSheet.create({
     color: '#3B82F6',
   },
 });
-</parameter>

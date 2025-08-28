@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, useWindowDimensions } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import Header from '@/components/Header';
 import BucketsTable from '@/components/BucketsTable';
@@ -7,6 +7,9 @@ import CreateBucketModal from '@/components/CreateBucketModal';
 
 export default function Dashboard() {
   const [modalVisible, setModalVisible] = useState(false);
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
 
   const handleCreateBucket = (name: string) => {
     console.log('Creating bucket:', name);
@@ -17,20 +20,22 @@ export default function Dashboard() {
     <SafeAreaView style={styles.container}>
       <Header />
       
-      <View style={styles.content}>
-        <View style={styles.pageHeader}>
-          <View>
-            <Text style={styles.pageTitle}>Buckets</Text>
-            <Text style={styles.pageSubtitle}>
+      <View style={[styles.content, isMobile && styles.contentMobile]}>
+        <View style={[styles.pageHeader, isMobile && styles.pageHeaderMobile]}>
+          <View style={[styles.headerText, isMobile && styles.headerTextMobile]}>
+            <Text style={[styles.pageTitle, isMobile && styles.pageTitleMobile]}>Buckets</Text>
+            <Text style={[styles.pageSubtitle, isMobile && styles.pageSubtitleMobile]}>
               Buckets are containers for your files. You can create as many buckets as you need.
             </Text>
           </View>
           <TouchableOpacity 
-            style={styles.createButton}
+            style={[styles.createButton, isMobile && styles.createButtonMobile]}
             onPress={() => setModalVisible(true)}
           >
             <Plus size={16} color="#FFFFFF" />
-            <Text style={styles.createButtonText}>Create New Bucket</Text>
+            <Text style={styles.createButtonText}>
+              {isMobile ? 'Create' : 'Create New Bucket'}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -55,11 +60,25 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
   },
+  contentMobile: {
+    padding: 16,
+  },
   pageHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 24,
+  },
+  pageHeaderMobile: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    marginBottom: 20,
+  },
+  headerText: {
+    flex: 1,
+  },
+  headerTextMobile: {
+    marginBottom: 16,
   },
   pageTitle: {
     fontSize: 28,
@@ -67,10 +86,17 @@ const styles = StyleSheet.create({
     color: '#1F2937',
     marginBottom: 4,
   },
+  pageTitleMobile: {
+    fontSize: 24,
+  },
   pageSubtitle: {
     fontSize: 14,
     color: '#6B7280',
     maxWidth: 400,
+  },
+  pageSubtitleMobile: {
+    fontSize: 13,
+    maxWidth: '100%',
   },
   createButton: {
     flexDirection: 'row',
@@ -80,6 +106,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     gap: 8,
+  },
+  createButtonMobile: {
+    justifyContent: 'center',
+    paddingVertical: 12,
   },
   createButtonText: {
     color: '#FFFFFF',

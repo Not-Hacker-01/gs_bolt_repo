@@ -1,15 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, useWindowDimensions } from 'react-native';
-import Header from '@/components/Header';
+import { useThemeContext } from '@/hooks/useThemeContext';
 
 export default function Help() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const { colors } = useThemeContext();
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
-      
       <View style={[styles.content, isMobile && styles.contentMobile]}>
         <View style={styles.pageHeader}>
           <Text style={[styles.pageTitle, isMobile && styles.pageTitleMobile]}>Help</Text>

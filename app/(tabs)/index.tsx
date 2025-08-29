@@ -1,52 +1,30 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, useWindowDimensions } from 'react-native';
-import { Plus } from 'lucide-react-native';
-import Header from '@/components/Header';
-import BucketsTable from '@/components/BucketsTable';
-import CreateBucketModal from '@/components/CreateBucketModal';
+import React from 'react';
+import { View, Text, StyleSheet, SafeAreaView, useWindowDimensions } from 'react-native';
+import { useThemeContext } from '@/hooks/useThemeContext';
 
 export default function Dashboard() {
-  const [modalVisible, setModalVisible] = useState(false);
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
-  const isTablet = width >= 768 && width < 1024;
-
-  const handleCreateBucket = (name: string) => {
-    console.log('Creating bucket:', name);
-    // Here you would typically call an API to create the bucket
-  };
+  const { colors } = useThemeContext();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Header />
-      
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.content, isMobile && styles.contentMobile]}>
         <View style={[styles.pageHeader, isMobile && styles.pageHeaderMobile]}>
           <View style={[styles.headerText, isMobile && styles.headerTextMobile]}>
-            <Text style={[styles.pageTitle, isMobile && styles.pageTitleMobile]}>Buckets</Text>
-            <Text style={[styles.pageSubtitle, isMobile && styles.pageSubtitleMobile]}>
-              Buckets are containers for your files. You can create as many buckets as you need.
+            <Text style={[styles.pageTitle, { color: colors.text }, isMobile && styles.pageTitleMobile]}>Dashboard</Text>
+            <Text style={[styles.pageSubtitle, { color: colors.textSecondary }, isMobile && styles.pageSubtitleMobile]}>
+              Welcome to your dashboard. Here you can view an overview of your account and manage your resources.
             </Text>
           </View>
-          <TouchableOpacity 
-            style={[styles.createButton, isMobile && styles.createButtonMobile]}
-            onPress={() => setModalVisible(true)}
-          >
-            <Plus size={16} color="#FFFFFF" />
-            <Text style={styles.createButtonText}>
-              {isMobile ? 'Create' : 'Create New Bucket'}
-            </Text>
-          </TouchableOpacity>
         </View>
 
-        <BucketsTable />
+        <View style={styles.dashboardContent}>
+          <Text style={[styles.dashboardText, { color: colors.text }]}>
+            Dashboard content will be displayed here. This is a placeholder for the main dashboard view.
+          </Text>
+        </View>
       </View>
-
-      <CreateBucketModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        onCreateBucket={handleCreateBucket}
-      />
     </SafeAreaView>
   );
 }
@@ -54,7 +32,6 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
   },
   content: {
     flex: 1,
@@ -83,7 +60,6 @@ const styles = StyleSheet.create({
   pageTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1F2937',
     marginBottom: 4,
   },
   pageTitleMobile: {
@@ -91,29 +67,25 @@ const styles = StyleSheet.create({
   },
   pageSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
     maxWidth: 400,
   },
   pageSubtitleMobile: {
     fontSize: 13,
     maxWidth: '100%',
   },
-  createButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#3B82F6',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    gap: 8,
-  },
   createButtonMobile: {
     justifyContent: 'center',
     paddingVertical: 12,
   },
-  createButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '500',
+  dashboardContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  dashboardText: {
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 24,
   },
 });

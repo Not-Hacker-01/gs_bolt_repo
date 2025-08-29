@@ -1,16 +1,28 @@
 import React from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
+import ThemeToggleButton from './ThemeToggleButton';
+import { useThemeContext } from '@/hooks/useThemeContext';
 
 export default function Header() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const { colors } = useThemeContext();
 
   return (
-    <View style={[styles.header, isMobile && styles.headerMobile]}>
+    <View style={[
+      styles.header, 
+      { backgroundColor: colors.background, borderBottomColor: colors.border },
+      isMobile && styles.headerMobile
+    ]}>
       <View style={styles.headerLeft}>
-        <Text style={[styles.brandText, isMobile && styles.brandTextMobile]}>myflapi</Text>
+        <Text style={[
+          styles.brandText, 
+          { color: colors.text },
+          isMobile && styles.brandTextMobile
+        ]}>myflapi</Text>
       </View>
       <View style={styles.headerRight}>
+        <ThemeToggleButton />
         <View style={styles.notificationBadge}>
           <Text style={styles.notificationText}>0</Text>
         </View>
@@ -29,9 +41,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingVertical: 16,
-    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
   },
   headerMobile: {
     paddingHorizontal: 16,
@@ -43,7 +53,6 @@ const styles = StyleSheet.create({
   brandText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
   },
   brandTextMobile: {
     fontSize: 16,

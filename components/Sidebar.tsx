@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
-import { Chrome as Home, FolderOpen, Key, ChartBar as BarChart3, Settings, CircleHelp as HelpCircle } from 'lucide-react-native';
+import { Chrome as Home, FolderOpen, Key, ChartBar as BarChart3, Settings, CircleHelp as HelpCircle, Square } from 'lucide-react-native';
+import { useThemeContext } from '@/hooks/useThemeContext';
 
 interface NavItem {
   id: string;
@@ -14,6 +15,7 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { width } = useWindowDimensions();
+  const { colors } = useThemeContext();
   
   const navItems: NavItem[] = [
     {
@@ -52,10 +54,20 @@ export default function Sidebar() {
       icon: HelpCircle,
       route: '/help',
     },
+    {
+      id: 'button-demo',
+      label: 'Button Demo',
+      icon: Square,
+      route: '/button-demo',
+    },
   ];
 
   const handleNavigation = (route: string) => {
-    router.push(route);
+    if (route === '/') {
+      router.push('/(tabs)');
+    } else {
+      router.push(route as any);
+    }
   };
 
   const isActive = (route: string) => {
@@ -69,11 +81,7 @@ export default function Sidebar() {
   }
 
   return (
-    <View style={styles.sidebar}>
-      <View style={styles.header}>
-        <Text style={styles.brandText}>myflapi</Text>
-      </View>
-      
+    <View style={[styles.sidebar, { backgroundColor: colors.background }]}>
       <View style={styles.nav}>
         {navItems.map((item) => {
           const IconComponent = item.icon;
@@ -94,7 +102,7 @@ export default function Sidebar() {
               />
               <Text style={[
                 styles.navText,
-                active && styles.navTextActive,
+                { color: active ? colors.primary : colors.textSecondary },
               ]}>
                 {item.label}
               </Text>
@@ -108,26 +116,13 @@ export default function Sidebar() {
 
 const styles = StyleSheet.create({
   sidebar: {
-    width: 240,
-    backgroundColor: '#FFFFFF',
-    borderRightWidth: 1,
-    borderRightColor: '#E5E7EB',
+    width: 320,
     paddingTop: 20,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  brandText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
   },
   nav: {
     paddingTop: 20,
     paddingHorizontal: 12,
+    paddingLeft: 32,
   },
   navItem: {
     flexDirection: 'row',
@@ -144,9 +139,5 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 14,
     fontWeight: '500',
-    color: '#6B7280',
-  },
-  navTextActive: {
-    color: '#3B82F6',
   },
 });

@@ -9,6 +9,8 @@ import {
   useWindowDimensions
 } from 'react-native';
 import { X } from 'lucide-react-native';
+import ThemeButton from './ThemeButton';
+import { useThemeContext } from '@/hooks/useThemeContext';
 
 interface CreateBucketModalProps {
   visible: boolean;
@@ -20,6 +22,7 @@ export default function CreateBucketModal({ visible, onClose, onCreateBucket }: 
   const [bucketName, setBucketName] = useState('');
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
+  const { colors } = useThemeContext();
 
   const handleCreate = () => {
     if (bucketName.trim()) {
@@ -37,38 +40,41 @@ export default function CreateBucketModal({ visible, onClose, onCreateBucket }: 
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <View style={[styles.modal, isMobile && styles.modalMobile]}>
-          <View style={styles.modalHeader}>
-            <Text style={[styles.modalTitle, isMobile && styles.modalTitleMobile]}>
+        <View style={[styles.modal, { backgroundColor: colors.surface }, isMobile && styles.modalMobile]}>
+          <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }, isMobile && styles.modalTitleMobile]}>
               Create New Bucket
             </Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={20} color="#6B7280" />
+              <X size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
           
           <View style={[styles.modalContent, isMobile && styles.modalContentMobile]}>
-            <Text style={styles.label}>Bucket Name</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Bucket Name</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { borderColor: colors.border, color: colors.text }]}
               placeholder="Enter bucket name"
+              placeholderTextColor={colors.textSecondary}
               value={bucketName}
               onChangeText={setBucketName}
               autoFocus
             />
           </View>
           
-          <View style={[styles.modalFooter, isMobile && styles.modalFooterMobile]}>
-            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.createButton, !bucketName.trim() && styles.createButtonDisabled]} 
+          <View style={[styles.modalFooter, { borderTopColor: colors.border }, isMobile && styles.modalFooterMobile]}>
+            <ThemeButton
+              title="Cancel"
+              onPress={onClose}
+              variant="secondary"
+              style={{ flex: 1 }}
+            />
+            <ThemeButton
+              title="Create Bucket"
               onPress={handleCreate}
               disabled={!bucketName.trim()}
-            >
-              <Text style={styles.createButtonText}>Create Bucket</Text>
-            </TouchableOpacity>
+              style={{ flex: 1 }}
+            />
           </View>
         </View>
       </View>
@@ -85,7 +91,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   modal: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     width: '100%',
     maxWidth: 400,
@@ -104,12 +109,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
   },
   modalTitleMobile: {
     fontSize: 16,
@@ -126,12 +129,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -142,39 +143,9 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
   },
   modalFooterMobile: {
     padding: 16,
   },
-  cancelButton: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-  },
-  createButton: {
-    flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    backgroundColor: '#3B82F6',
-    alignItems: 'center',
-  },
-  createButtonDisabled: {
-    backgroundColor: '#9CA3AF',
-  },
-  createButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#FFFFFF',
-  },
+
 });

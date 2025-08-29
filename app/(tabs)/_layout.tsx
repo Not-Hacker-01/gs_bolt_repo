@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { View, useWindowDimensions } from 'react-native';
 import Sidebar from '@/components/Sidebar';
+import Header from '@/components/Header';
 
 export default function TabLayout() {
   const { width } = useWindowDimensions();
@@ -9,25 +10,27 @@ export default function TabLayout() {
   const isMobile = width < 768;
 
   return (
-    <View style={{ flex: 1, flexDirection: isDesktop ? 'row' : 'column' }}>
-      {isDesktop && <Sidebar />}
-      <View style={{ flex: 1 }}>
-        <Tabs
-          screenOptions={{
-            headerShown: false,
-            tabBarStyle: { 
-              display: isDesktop ? 'none' : 'flex',
-              height: isMobile ? 60 : 70,
-              paddingBottom: isMobile ? 8 : 12,
-              paddingTop: 8,
-            },
-            tabBarLabelStyle: {
-              fontSize: isMobile ? 10 : 12,
-            },
-            tabBarIconStyle: {
-              marginBottom: isMobile ? 2 : 4,
-            },
-          }}>
+    <View style={{ flex: 1, flexDirection: 'column' }}>
+      <Header />
+      <View style={{ flex: 1, flexDirection: isDesktop ? 'row' : 'column' }}>
+        {isDesktop && <Sidebar />}
+        <View style={{ flex: 1 }}>
+          <Tabs
+            screenOptions={{
+              headerShown: false,
+              tabBarStyle: { 
+                display: isDesktop ? 'none' : 'flex',
+                height: isMobile ? 60 : 70,
+                paddingBottom: isMobile ? 8 : 12,
+                paddingTop: 8,
+              },
+              tabBarLabelStyle: {
+                fontSize: isMobile ? 10 : 12,
+              },
+              tabBarIconStyle: {
+                marginBottom: isMobile ? 2 : 4,
+              },
+            }}>
           <Tabs.Screen 
             name="index" 
             options={{
@@ -89,6 +92,7 @@ export default function TabLayout() {
             }}
           />
         </Tabs>
+        </View>
       </View>
     </View>
   );

@@ -8,7 +8,8 @@ import {
   StyleSheet, 
   useWindowDimensions 
 } from 'react-native';
-import { Search, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
+import { Search, MoreVertical } from 'lucide-react-native';
+import { useThemeContext } from '@/hooks/useThemeContext';
 
 interface Bucket {
   id: string;
@@ -25,6 +26,7 @@ export default function BucketsTable() {
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
+  const { colors } = useThemeContext();
   
   const buckets: Bucket[] = [
     {
@@ -89,41 +91,48 @@ export default function BucketsTable() {
 
   if (isMobile) {
     return (
-      <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <Search size={20} color="#6B7280" style={styles.searchIcon} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Search size={20} color={colors.textSecondary} style={styles.searchIcon} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, { color: colors.text }]}
             placeholder="Search Buckets"
+            placeholderTextColor={colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
         </View>
 
-        <ScrollView style={styles.mobileList}>
+        <ScrollView 
+          style={styles.mobileList}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.mobileListContent}
+        >
           {filteredBuckets.map((bucket) => (
-            <View key={bucket.id} style={styles.mobileCard}>
+            <View key={bucket.id} style={[styles.mobileCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <View style={styles.mobileCardHeader}>
-                <Text style={styles.mobileCardTitle}>{bucket.name}</Text>
+                <Text style={[styles.mobileCardTitle, { color: colors.text }]}>{bucket.name}</Text>
                 <TouchableOpacity style={styles.moreButton}>
-                  <MoreHorizontal size={16} color="#6B7280" />
+                  <MoreVertical size={16} color={colors.textSecondary} />
                 </TouchableOpacity>
               </View>
               <View style={styles.mobileCardContent}>
                 <View style={styles.mobileCardRow}>
-                  <Text style={styles.mobileCardLabel}>Files:</Text>
-                  <Text style={styles.mobileCardValue}>{bucket.files}</Text>
+                  <Text style={[styles.mobileCardLabel, { color: colors.textSecondary }]}>Files:</Text>
+                  <Text style={[styles.mobileCardValue, { color: colors.text }]}>{bucket.files}</Text>
                 </View>
                 <View style={styles.mobileCardRow}>
-                  <Text style={styles.mobileCardLabel}>Size:</Text>
-                  <Text style={styles.mobileCardValue}>{bucket.size}</Text>
+                  <Text style={[styles.mobileCardLabel, { color: colors.textSecondary }]}>Size:</Text>
+                  <Text style={[styles.mobileCardValue, { color: colors.text }]}>{bucket.size}</Text>
                 </View>
                 <View style={styles.mobileCardRow}>
-                  <Text style={styles.mobileCardLabel}>Access:</Text>
-                  <Text style={styles.mobileCardValue}>{bucket.access}</Text>
+                  <Text style={[styles.mobileCardLabel, { color: colors.textSecondary }]}>Access:</Text>
+                  <View style={[styles.mobileAccessBadge, { backgroundColor: '#F3F4F6' }]}>
+                    <Text style={[styles.mobileAccessBadgeText, { color: '#374151' }]}>{bucket.access}</Text>
+                  </View>
                 </View>
               </View>
-              <TouchableOpacity style={styles.mobileViewButton}>
+              <TouchableOpacity style={[styles.mobileViewButton, { backgroundColor: colors.primary }]}>
                 <Text style={styles.mobileViewButtonText}>View</Text>
               </TouchableOpacity>
             </View>
@@ -134,55 +143,65 @@ export default function BucketsTable() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.searchContainer, isTablet && styles.searchContainerTablet]}>
-        <Search size={20} color="#6B7280" style={styles.searchIcon} />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <Search size={20} color={colors.textSecondary} style={styles.searchIcon} />
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { color: colors.text }]}
           placeholder="Search Buckets"
+          placeholderTextColor={colors.textSecondary}
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
       </View>
 
-      <ScrollView horizontal={isTablet} showsHorizontalScrollIndicator={false}>
+      <View style={[styles.tableContainer, { borderColor: colors.border }]}>
         <View style={[styles.table, isTablet && styles.tableTablet]}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.headerCell, { width: isTablet ? 140 : 160 }]}>Bucket Name</Text>
-            <Text style={[styles.headerCell, { width: isTablet ? 100 : 120 }]}>Created On</Text>
-            <Text style={[styles.headerCell, { width: 80 }]}>Files</Text>
-            <Text style={[styles.headerCell, { width: 80 }]}>Size</Text>
-            <Text style={[styles.headerCell, { width: isTablet ? 100 : 120 }]}>Last Modified</Text>
-            <Text style={[styles.headerCell, { width: 100 }]}>Access</Text>
-            <Text style={[styles.headerCell, { width: 100 }]}>Actions</Text>
+          <View style={[styles.tableHeader, { borderBottomColor: colors.border, backgroundColor: '#F9FAFB' }]}>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.bucketNameCell]}>Bucket Name</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.dateCell]}>Created On</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.numberCell]}>Files</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.numberCell]}>Size</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.dateCell]}>Last Modified</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.accessCell]}>Access</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.actionsCell]}>Actions</Text>
           </View>
 
-          {filteredBuckets.map((bucket, index) => (
-            <View 
-              key={bucket.id} 
-              style={[
-                styles.tableRow,
-                index % 2 === 1 && styles.tableRowAlternate
-              ]}
-            >
-              <Text style={[styles.cell, { width: isTablet ? 140 : 160 }]}>{bucket.name}</Text>
-              <Text style={[styles.cell, { width: isTablet ? 100 : 120 }]}>{bucket.createdOn}</Text>
-              <Text style={[styles.cell, { width: 80 }]}>{bucket.files}</Text>
-              <Text style={[styles.cell, { width: 80 }]}>{bucket.size}</Text>
-              <Text style={[styles.cell, { width: isTablet ? 100 : 120 }]}>{bucket.lastModified}</Text>
-              <Text style={[styles.cell, { width: 100 }]}>{bucket.access}</Text>
-              <View style={[styles.actionsCell, { width: 100 }]}>
-                <TouchableOpacity style={styles.viewButton}>
-                  <Text style={styles.viewButtonText}>View</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.moreButton}>
-                  <MoreHorizontal size={16} color="#6B7280" />
-                </TouchableOpacity>
-              </View>
+            <View style={styles.tableBody}>
+              {filteredBuckets.map((bucket, index) => (
+                <View 
+                  key={bucket.id} 
+                  style={[
+                    styles.tableRow,
+                    { 
+                      borderBottomColor: colors.border,
+                      borderBottomWidth: index === filteredBuckets.length - 1 ? 0 : 1
+                    }
+                  ]}
+                >
+                  <Text style={[styles.cell, { color: colors.text }, styles.bucketNameCell]}>{bucket.name}</Text>
+                  <Text style={[styles.cell, { color: colors.text }, styles.dateCell]}>{bucket.createdOn}</Text>
+                  <Text style={[styles.cell, { color: colors.text }, styles.numberCell]}>{bucket.files}</Text>
+                  <Text style={[styles.cell, { color: colors.text }, styles.numberCell]}>{bucket.size}</Text>
+                  <Text style={[styles.cell, { color: colors.text }, styles.dateCell]}>{bucket.lastModified}</Text>
+                  <View style={[styles.accessCellContainer, styles.accessCell]}> 
+                    <View style={[styles.accessBadge, { backgroundColor: '#F3F4F6' }]}>
+                      <Text style={[styles.accessBadgeText, { color: '#374151' }]}>{bucket.access}</Text>
+                    </View>
+                  </View>
+                  <View style={[styles.actionsCellContainer, styles.actionsCell]}>
+                    <TouchableOpacity style={styles.viewButton}>
+                      <Text style={[styles.viewButtonText, { color: '#3B82F6' }]}>View</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.moreButton}>
+                      <MoreVertical size={16} color={colors.textSecondary} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
             </View>
-          ))}
+          </View>
         </View>
-      </ScrollView>
     </View>
   );
 }
@@ -190,21 +209,16 @@ export default function BucketsTable() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    minHeight: 0,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    marginHorizontal: 24,
-    marginVertical: 16,
+    marginTop: 16,
+    marginBottom: 16,
     paddingHorizontal: 12,
-  },
-  searchContainerTablet: {
-    marginHorizontal: 16,
+    minHeight: 44,
   },
   searchIcon: {
     marginRight: 8,
@@ -213,47 +227,92 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#1F2937',
+    minHeight: 24,
+  },
+  tableContainer: {
+    marginBottom: 24,
   },
   table: {
-    minWidth: 760,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   tableTablet: {
     minWidth: 680,
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: '#F9FAFB',
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
     paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16,
+    minHeight: 48,
+    alignItems: 'center',
   },
   headerCell: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#374151',
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  tableRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    alignItems: 'center',
+  bucketNameCell: {
+    flex: 1,
+    paddingRight: 16,
   },
-  tableRowAlternate: {
-    backgroundColor: '#F9FAFB',
+  dateCell: {
+    flex: 1,
+    paddingRight: 16,
   },
-  cell: {
-    fontSize: 14,
-    color: '#1F2937',
+  numberCell: {
+    flex: 1,
+    paddingRight: 16,
+  },
+  accessCell: {
+    flex: 1,
+    paddingRight: 16,
   },
   actionsCell: {
+    flex: 1,
+    paddingRight: 16,
+  },
+  accessCellContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    flex: 1,
+    paddingRight: 16,
+  },
+  actionsCellContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flex: 1,
+    paddingRight: 16,
+  },
+  tableBody: {
+    flex: 1,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    minHeight: 72,
+  },
+  cell: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  accessBadge: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    minWidth: 90,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  accessBadgeText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
   viewButton: {
     paddingHorizontal: 8,
@@ -261,24 +320,32 @@ const styles = StyleSheet.create({
   },
   viewButtonText: {
     fontSize: 14,
-    color: '#3B82F6',
     fontWeight: '500',
   },
   moreButton: {
     padding: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 4,
+    width: 24,
+    height: 24,
   },
   // Mobile styles
   mobileList: {
     flex: 1,
+    minHeight: 0,
+  },
+  mobileListContent: {
     paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   mobileCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -294,7 +361,6 @@ const styles = StyleSheet.create({
   mobileCardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
   },
   mobileCardContent: {
     marginBottom: 12,
@@ -306,15 +372,12 @@ const styles = StyleSheet.create({
   },
   mobileCardLabel: {
     fontSize: 14,
-    color: '#6B7280',
   },
   mobileCardValue: {
     fontSize: 14,
-    color: '#1F2937',
     fontWeight: '500',
   },
   mobileViewButton: {
-    backgroundColor: '#3B82F6',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 6,
@@ -323,6 +386,15 @@ const styles = StyleSheet.create({
   mobileViewButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
+    fontWeight: '500',
+  },
+  mobileAccessBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  mobileAccessBadgeText: {
+    fontSize: 12,
     fontWeight: '500',
   },
 });

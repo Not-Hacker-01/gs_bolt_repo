@@ -95,15 +95,12 @@ export default function Dashboard() {
   const renderQuickUploadSection = () => (
     <View>
       <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 16 }]}>Quick Upload</Text>
-      <View style={[styles.uploadContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <View style={[styles.uploadArea, { borderColor: colors.border }]}>
-          <Upload size={32} color={colors.textSecondary} />
-          <Text style={[styles.uploadText, { color: colors.text }]}>Drag and drop files here</Text>
-          <Text style={[styles.uploadSubtext, { color: colors.textSecondary }]}>Or click to browse your files</Text>
-          <TouchableOpacity style={[styles.uploadButton, { backgroundColor: colors.primary }]}>
-            <Text style={styles.uploadButtonText}>Upload Files</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={[styles.uploadContainer, { backgroundColor: '#FFFFFF', borderColor: colors.border }]}>
+        <Text style={[styles.uploadText, { color: colors.text }]}>Drag and drop files here</Text>
+        <Text style={[styles.uploadSubtext, { color: colors.textSecondary }]}>Or click to browse your files</Text>
+        <TouchableOpacity style={[styles.uploadButton, { backgroundColor: colors.primary }]}>
+          <Text style={styles.uploadButtonText}>Upload Files</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -145,7 +142,7 @@ export default function Dashboard() {
   const renderStorageDistributionSection = () => (
     <View>
       <Text style={[styles.sectionTitle, { color: colors.text, marginBottom: 16 }]}>Storage Distribution</Text>
-      <View style={[styles.storageContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+      <View style={[styles.storageContainer, { backgroundColor: '#FFFFFF', borderColor: colors.border }]}>
         <View style={styles.storageHeader}>
           <Text style={[styles.storageHeading, { color: colors.text }]}>Storage Distribution</Text>
           <Text style={[styles.storageTotal, { color: colors.text }]}>12.5 TB</Text>
@@ -255,7 +252,11 @@ const styles = StyleSheet.create({
   uploadContainer: {
     padding: 24,
     borderRadius: 12,
-    borderWidth: 1,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 250,
   },
   sectionTitle: {
     fontSize: 18,
@@ -266,14 +267,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '400',
   },
-  uploadArea: {
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderRadius: 12,
-    padding: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+
   uploadText: {
     fontSize: 16,
     fontWeight: '600',
@@ -345,6 +339,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     textAlign: 'center',
     fontWeight: '500',
+    width: 60,
   },
   // Table styles for Recent Activity
   tableContainer: {

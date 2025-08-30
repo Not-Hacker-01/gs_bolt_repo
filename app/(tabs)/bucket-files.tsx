@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -6,135 +6,133 @@ import {
   TouchableOpacity, 
   ScrollView, 
   StyleSheet, 
-  useWindowDimensions,
-  findNodeHandle
+  SafeAreaView, 
+  useWindowDimensions 
 } from 'react-native';
-import { Search, MoreVertical } from 'lucide-react-native';
+import { Search, MoreVertical, ChevronRight } from 'lucide-react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useThemeContext } from '@/hooks/useThemeContext';
-import ContextMenu from './ContextMenu';
-import { useRouter } from 'expo-router';
+import ContextMenu from '@/components/ContextMenu';
 
-interface Bucket {
+interface File {
   id: string;
   name: string;
-  createdOn: string;
-  files: number;
+  type: string;
   size: string;
-  lastModified: string;
-  access: string;
+  createdDate: string;
+  lastModifiedDate: string;
 }
 
-export default function BucketsTable() {
+export default function BucketFiles() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
-  const [selectedBucket, setSelectedBucket] = useState<Bucket | null>(null);
-  const buttonRefs = useRef<{ [key: string]: any }>({});
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const buttonRefs = React.useRef<{ [key: string]: any }>({});
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
   const { colors } = useThemeContext();
-  
-  const buckets: Bucket[] = [
+
+  const bucketName = params.bucketName as string || 'MyBucket';
+
+  const files: File[] = [
     {
       id: '1',
-      name: 'Project Alpha',
-      createdOn: '2023-08-15',
-      files: 120,
-      size: '50 GB',
-      lastModified: '2024-01-20',
-      access: 'Private',
+      name: 'document1.pdf',
+      type: 'PDF',
+      size: '2.5 MB',
+      createdDate: '2024-01-15',
+      lastModifiedDate: '2024-01-15',
     },
     {
       id: '2',
-      name: 'Project Alpha',
-      createdOn: '2023-08-15',
-      files: 120,
-      size: '50 GB',
-      lastModified: '2024-01-20',
-      access: 'Private',
+      name: 'image1.jpg',
+      type: 'Image',
+      size: '1.2 MB',
+      createdDate: '2024-01-16',
+      lastModifiedDate: '2024-01-16',
     },
     {
       id: '3',
-      name: 'Project Alpha',
-      createdOn: '2023-08-15',
-      files: 120,
-      size: '50 GB',
-      lastModified: '2024-01-20',
-      access: 'Private',
+      name: 'video1.mp4',
+      type: 'Video',
+      size: '150 MB',
+      createdDate: '2024-01-17',
+      lastModifiedDate: '2024-01-17',
     },
     {
       id: '4',
-      name: 'Project Alpha',
-      createdOn: '2023-08-15',
-      files: 120,
-      size: '50 GB',
-      lastModified: '2024-01-20',
-      access: 'Private',
+      name: 'archive.zip',
+      type: 'Archive',
+      size: '50 MB',
+      createdDate: '2024-01-18',
+      lastModifiedDate: '2024-01-18',
     },
     {
       id: '5',
-      name: 'Project Alpha',
-      createdOn: '2023-08-15',
-      files: 120,
-      size: '50 GB',
-      lastModified: '2024-01-20',
-      access: 'Private',
-    },
-    {
-      id: '6',
-      name: 'Archived Data',
-      createdOn: '2023-12-01',
-      files: 1000,
-      size: '400 GB',
-      lastModified: '2024-04-01',
-      access: 'Private',
+      name: 'data.csv',
+      type: 'CSV',
+      size: '10 MB',
+      createdDate: '2024-01-19',
+      lastModifiedDate: '2024-01-19',
     },
   ];
 
-  const filteredBuckets = buckets.filter(bucket =>
-    bucket.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredFiles = files.filter(file =>
+    file.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleMoreButtonPress = (bucket: Bucket) => {
-    const buttonRef = buttonRefs.current[bucket.id];
+  const handleMoreButtonPress = (file: File) => {
+    const buttonRef = buttonRefs.current[file.id];
     if (buttonRef) {
       buttonRef.measure((x: number, y: number, width: number, height: number, pageX: number, pageY: number) => {
         setContextMenuPosition({ x: pageX + width, y: pageY });
-        setSelectedBucket(bucket);
+        setSelectedFile(file);
         setContextMenuVisible(true);
       });
     }
   };
 
   const handleShare = () => {
-    console.log('Share bucket:', selectedBucket?.name);
+    console.log('Share file:', selectedFile?.name);
   };
 
   const handleDetails = () => {
-    if (selectedBucket) {
+    if (selectedFile) {
       router.push({
-        pathname: '/bucket-details',
+        pathname: '/object-details',
         params: {
-          id: selectedBucket.id,
-          bucketName: selectedBucket.name,
-          createdOn: selectedBucket.createdOn,
-          files: selectedBucket.files.toString(),
-          size: selectedBucket.size,
-          lastModified: selectedBucket.lastModified,
-          access: selectedBucket.access,
+          id: selectedFile.id,
+          fileName: selectedFile.name,
+          bucketName: bucketName,
+          size: selectedFile.size,
+          type: selectedFile.type,
+          createdDate: selectedFile.createdDate,
+          lastModifiedDate: selectedFile.lastModifiedDate,
+          uploadedBy: 'Sophia Carter', // Default value for demo
+          objectKey: `/${bucketName.toLowerCase()}/${selectedFile.name.toLowerCase()}`,
         }
       });
     }
   };
 
   const handleDownload = () => {
-    console.log('Download bucket:', selectedBucket?.name);
+    console.log('Download file:', selectedFile?.name);
   };
 
   const handleDelete = () => {
-    console.log('Delete bucket:', selectedBucket?.name);
+    console.log('Delete file:', selectedFile?.name);
+  };
+
+
+
+  const handleBreadcrumbPress = (path: string) => {
+    if (path === 'Buckets') {
+      router.push('/buckets');
+    }
   };
 
   const renderMobileView = () => (
@@ -143,7 +141,7 @@ export default function BucketsTable() {
         <Search size={20} color={colors.textSecondary} style={styles.searchIcon} />
         <TextInput
           style={[styles.searchInput, { color: colors.text }]}
-          placeholder="Search Buckets"
+          placeholder="Search Files"
           placeholderTextColor={colors.textSecondary}
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -155,41 +153,31 @@ export default function BucketsTable() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.mobileListContent}
       >
-        {filteredBuckets.map((bucket) => (
-          <View key={bucket.id} style={[styles.mobileCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        {filteredFiles.map((file) => (
+          <View key={file.id} style={[styles.mobileCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <View style={styles.mobileCardHeader}>
-              <Text 
-                style={[styles.mobileCardTitle, { color: colors.text }, styles.clickableText]}
-                onPress={() => router.push({
-                  pathname: '/bucket-files',
-                  params: { bucketName: bucket.name }
-                })}
-              >
-                {bucket.name}
-              </Text>
+              <Text style={[styles.mobileCardTitle, { color: colors.text }]}>{file.name}</Text>
               <TouchableOpacity 
-                ref={(ref) => { buttonRefs.current[bucket.id] = ref; }}
+                ref={(ref) => { buttonRefs.current[file.id] = ref; }}
                 style={styles.moreButton} 
                 activeOpacity={1}
-                onPress={() => handleMoreButtonPress(bucket)}
+                onPress={() => handleMoreButtonPress(file)}
               >
                 <MoreVertical size={16} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
             <View style={styles.mobileCardContent}>
               <View style={styles.mobileCardRow}>
-                <Text style={[styles.mobileCardLabel, { color: colors.textSecondary }]}>Files:</Text>
-                <Text style={[styles.mobileCardValue, { color: colors.text }]}>{bucket.files}</Text>
+                <Text style={[styles.mobileCardLabel, { color: colors.textSecondary }]}>Type:</Text>
+                <Text style={[styles.mobileCardValue, { color: colors.text }]}>{file.type}</Text>
               </View>
               <View style={styles.mobileCardRow}>
                 <Text style={[styles.mobileCardLabel, { color: colors.textSecondary }]}>Size:</Text>
-                <Text style={[styles.mobileCardValue, { color: colors.text }]}>{bucket.size}</Text>
+                <Text style={[styles.mobileCardValue, { color: colors.text }]}>{file.size}</Text>
               </View>
               <View style={styles.mobileCardRow}>
-                <Text style={[styles.mobileCardLabel, { color: colors.textSecondary }]}>Access:</Text>
-                <View style={[styles.mobileAccessBadge, { backgroundColor: '#F3F4F6' }]}>
-                  <Text style={[styles.mobileAccessBadgeText, { color: '#374151' }]}>{bucket.access}</Text>
-                </View>
+                <Text style={[styles.mobileCardLabel, { color: colors.textSecondary }]}>Created:</Text>
+                <Text style={[styles.mobileCardValue, { color: colors.text }]}>{file.createdDate}</Text>
               </View>
             </View>
             <TouchableOpacity style={[styles.mobileViewButton, { backgroundColor: colors.primary }]} activeOpacity={1}>
@@ -207,7 +195,7 @@ export default function BucketsTable() {
         <Search size={20} color={colors.textSecondary} style={styles.searchIcon} />
         <TextInput
           style={[styles.searchInput, { color: colors.text }]}
-          placeholder="Search Buckets"
+          placeholder="Search Files"
           placeholderTextColor={colors.textSecondary}
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -217,54 +205,40 @@ export default function BucketsTable() {
       <View style={[styles.tableContainer, { borderColor: colors.border }]}>
         <View style={[styles.table, isTablet && styles.tableTablet]}>
           <View style={[styles.tableHeader, { borderBottomColor: colors.border, backgroundColor: '#F9FAFB' }]}>
-            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.bucketNameCell]}>Bucket Name</Text>
-            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.dateCell]}>Created On</Text>
-            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.numberCell]}>Files</Text>
-            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.numberCell]}>Size</Text>
-            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.dateCell]}>Last Modified</Text>
-            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.accessCell]}>Access</Text>
-            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.actionsCell]}>Actions</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.nameCell]}>Name</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.typeCell]}>Type</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.sizeCell]}>Size</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.dateCell]}>Created Date</Text>
+            <Text style={[styles.headerCell, { color: colors.textSecondary }, styles.dateCell]}>Last Modified Date</Text>
+            <Text style={[styles.actionsHeaderCell, { color: colors.textSecondary }, styles.actionsCell]}>Actions</Text>
           </View>
 
           <View style={styles.tableBody}>
-            {filteredBuckets.map((bucket, index) => (
+            {filteredFiles.map((file, index) => (
               <View 
-                key={bucket.id} 
+                key={file.id} 
                 style={[
                   styles.tableRow,
                   { 
                     borderBottomColor: colors.border,
-                    borderBottomWidth: index === filteredBuckets.length - 1 ? 0 : 1
+                    borderBottomWidth: index === filteredFiles.length - 1 ? 0 : 1
                   }
                 ]}
               >
-                <Text 
-                  style={[styles.cell, { color: colors.text }, styles.bucketNameCell, styles.clickableText]}
-                  onPress={() => router.push({
-                    pathname: '/bucket-files',
-                    params: { bucketName: bucket.name }
-                  })}
-                >
-                  {bucket.name}
-                </Text>
-                <Text style={[styles.cell, { color: colors.text }, styles.dateCell]}>{bucket.createdOn}</Text>
-                <Text style={[styles.cell, { color: colors.text }, styles.numberCell]}>{bucket.files}</Text>
-                <Text style={[styles.cell, { color: colors.text }, styles.numberCell]}>{bucket.size}</Text>
-                <Text style={[styles.cell, { color: colors.text }, styles.dateCell]}>{bucket.lastModified}</Text>
-                <View style={[styles.accessCellContainer, styles.accessCell]}> 
-                  <View style={[styles.accessBadge, { backgroundColor: '#F3F4F6' }]}>
-                    <Text style={[styles.accessBadgeText, { color: '#374151' }]}>{bucket.access}</Text>
-                  </View>
-                </View>
+                <Text style={[styles.cell, { color: colors.text }, styles.nameCell]}>{file.name}</Text>
+                <Text style={[styles.cell, { color: colors.text }, styles.typeCell]}>{file.type}</Text>
+                <Text style={[styles.cell, { color: colors.text }, styles.sizeCell]}>{file.size}</Text>
+                <Text style={[styles.cell, { color: colors.text }, styles.dateCell]}>{file.createdDate}</Text>
+                <Text style={[styles.cell, { color: colors.text }, styles.dateCell]}>{file.lastModifiedDate}</Text>
                 <View style={[styles.actionsCellContainer, styles.actionsCell]}>
                   <TouchableOpacity style={styles.viewButton} activeOpacity={1}>
                     <Text style={[styles.viewButtonText, { color: '#3B82F6' }]}>View</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
-                    ref={(ref) => { buttonRefs.current[bucket.id] = ref; }}
+                    ref={(ref) => { buttonRefs.current[file.id] = ref; }}
                     style={styles.moreButton} 
                     activeOpacity={1}
-                    onPress={() => handleMoreButtonPress(bucket)}
+                    onPress={() => handleMoreButtonPress(file)}
                   >
                     <MoreVertical size={16} color={colors.textSecondary} />
                   </TouchableOpacity>
@@ -278,26 +252,85 @@ export default function BucketsTable() {
   );
 
   return (
-    <View style={{ flex: 1 }}>
-      {isMobile ? renderMobileView() : renderDesktopView()}
-      
-      <ContextMenu
-        visible={contextMenuVisible}
-        onClose={() => setContextMenuVisible(false)}
-        position={contextMenuPosition}
-        onShare={handleShare}
-        onDetails={handleDetails}
-        onDownload={handleDownload}
-        onDelete={handleDelete}
-      />
-    </View>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.content, isMobile && styles.contentMobile]}>
+        {/* Header */}
+        <View style={[styles.header, isMobile && styles.headerMobile]}>
+          <Text style={[styles.title, { color: colors.text }, isMobile && styles.titleMobile]}>
+            Bucket
+          </Text>
+        </View>
+
+        {/* Breadcrumb */}
+        <View style={styles.breadcrumbContainer}>
+          <TouchableOpacity 
+            onPress={() => handleBreadcrumbPress('Buckets')}
+            style={styles.breadcrumbItem}
+          >
+            <Text style={[styles.breadcrumbText, { color: colors.textSecondary }]}>Buckets</Text>
+          </TouchableOpacity>
+          <ChevronRight size={16} color={colors.textSecondary} style={styles.breadcrumbSeparator} />
+          <Text style={[styles.breadcrumbText, { color: colors.text }]}>{bucketName}</Text>
+        </View>
+
+        {/* Content */}
+        {isMobile ? renderMobileView() : renderDesktopView()}
+
+        <ContextMenu
+          visible={contextMenuVisible}
+          onClose={() => setContextMenuVisible(false)}
+          position={contextMenuPosition}
+          onShare={handleShare}
+          onDetails={handleDetails}
+          onDownload={handleDownload}
+          onDelete={handleDelete}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    minHeight: 0,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
+  contentMobile: {
+    paddingHorizontal: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 20,
+    gap: 16,
+  },
+  headerMobile: {
+    paddingVertical: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+  },
+  titleMobile: {
+    fontSize: 20,
+  },
+  breadcrumbContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+  },
+  breadcrumbItem: {
+    paddingVertical: 2,
+  },
+  breadcrumbText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  breadcrumbSeparator: {
+    marginHorizontal: 8,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -339,38 +372,36 @@ const styles = StyleSheet.create({
   },
   headerCell: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  bucketNameCell: {
+  nameCell: {
+    flex: 2,
+    paddingRight: 16,
+  },
+  typeCell: {
     flex: 1,
     paddingRight: 16,
   },
-  clickableText: {
-    cursor: 'pointer',
+  sizeCell: {
+    flex: 1,
+    paddingRight: 16,
   },
   dateCell: {
-    flex: 1,
-    paddingRight: 16,
-  },
-  numberCell: {
-    flex: 1,
-    paddingRight: 16,
-  },
-  accessCell: {
-    flex: 1,
+    flex: 1.5,
     paddingRight: 16,
   },
   actionsCell: {
     flex: 1,
     paddingRight: 16,
+    paddingLeft: 8,
   },
-  accessCellContainer: {
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    flex: 1,
-    paddingRight: 16,
+  actionsHeaderCell: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   actionsCellContainer: {
     flexDirection: 'row',
@@ -392,18 +423,6 @@ const styles = StyleSheet.create({
   cell: {
     fontSize: 14,
     lineHeight: 20,
-  },
-  accessBadge: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    minWidth: 90,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  accessBadgeText: {
-    fontSize: 13,
-    fontWeight: '600',
   },
   viewButton: {
     paddingHorizontal: 8,
@@ -477,15 +496,6 @@ const styles = StyleSheet.create({
   mobileViewButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '500',
-  },
-  mobileAccessBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  mobileAccessBadgeText: {
-    fontSize: 12,
     fontWeight: '500',
   },
 });

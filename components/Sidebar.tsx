@@ -72,6 +72,9 @@ export default function Sidebar() {
 
   const isActive = (route: string) => {
     if (route === '/') return pathname === '/' || pathname === '/(tabs)';
+    if (route === '/buckets') {
+      return pathname.includes(route) || pathname.includes('bucket-files') || pathname.includes('object-details');
+    }
     return pathname.includes(route);
   };
 

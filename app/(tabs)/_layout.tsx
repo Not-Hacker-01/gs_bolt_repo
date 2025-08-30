@@ -52,6 +52,18 @@ export default function TabLayout() {
             }}
           />
           <Tabs.Screen 
+            name="bucket-files" 
+            options={{
+              href: null, // Hide from tab bar
+            }}
+          />
+          <Tabs.Screen 
+            name="object-details" 
+            options={{
+              href: null, // Hide from tab bar
+            }}
+          />
+          <Tabs.Screen 
             name="access-keys" 
             options={{
               title: 'Keys',
